@@ -1,10 +1,3 @@
-/*
-  https://www.mac4n6.com/blog/2018/8/5/knowledge-is-power-using-the-knowledgecdb-database-on-macos-and-ios-to-determine-precise-user-and-application-usage
-  find / -name 'knowledgeC*' 2>&1 | grep -v "Operation not permitted"
-  ~/Library/Application\ Support/Knowledge/
-  /System/Volumes/Data/Users/$USER/Library/Application Support/Knowledge/knowledgeC.db
-*/
-
 -- get today's total app usage
 with app_usage as (
   select datetime(ZOBJECT.ZCREATIONDATE + 978307200, 'UNIXEPOCH', 'LOCALTIME') as entry_creation, 
