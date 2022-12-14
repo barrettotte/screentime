@@ -1,27 +1,25 @@
-// simplest menubar screen time
-// run: swift ScreenTime.swift
 import AppKit
 
-class App : NSObject, NSApplicationDelegate {
+class ScreenTimeApp : NSObject, NSApplicationDelegate {
     let app = NSApplication.shared
-    let status = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     var timer = Timer()
     var counter = 0
-    
+
+    // TODO: remove?
     let window = NSWindow.init(
         contentRect: NSMakeRect(0, 0, 200, 200),
         styleMask: [.titled, .closable, .miniaturizable],
         backing: .buffered,
-        defer: false
-    )
+        defer: false)
 
     override init() {
         super.init()
-        app.setActivationPolicy(.accessory)
+        app.setActivationPolicy(.accessory) // No dock, no menubar
 
         let statusMenu = newMenu()
-        status.button?.title = "..."
-        status.menu = statusMenu
+        statusItem.button?.title = "..."
+        statusItem.menu = statusMenu
 
         let appMenu = newMenu()
         let sub = NSMenuItem()
@@ -29,7 +27,12 @@ class App : NSObject, NSApplicationDelegate {
         app.mainMenu = NSMenu()
         app.mainMenu?.addItem(sub)
 
-        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerAction), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(
+            timeInterval: 1.0, 
+            target: self, 
+            selector: #selector(timerAction), 
+            userInfo: nil, 
+            repeats: true)
 
         print("App initialized.")
     }
@@ -38,7 +41,7 @@ class App : NSObject, NSApplicationDelegate {
     @objc func timerAction() {
         counter += 1
         print("\(counter) second(s)")
-        // status.button?.title = "\(counter)"
+        // statusItem.button?.title = "\(counter)"
     }
 
     func applicationDidFinishLaunching(_ n: Notification) {
@@ -47,14 +50,14 @@ class App : NSObject, NSApplicationDelegate {
 
     private func newMenu(title: String = "Menu") -> NSMenu {
         let menu = NSMenu(title: title)
-        menu.addItem(NSMenuItem.init(title: "Exit", action: #selector(app.terminate(_:)), keyEquivalent: "q"))
+
+        menu.addItem(NSMenuItem.init(
+            title: "Exit", 
+            action: #selector(app.terminate(_:)), 
+            keyEquivalent: "q"))
+
         // TODO: open System Preferences/Screen Time
+
         return menu
     }
 }
-
-// run application
-let delegate = App()
-let app = NSApplication.shared
-app.delegate = delegate
-app.run()

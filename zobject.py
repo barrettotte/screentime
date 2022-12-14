@@ -1,9 +1,7 @@
+# Test fetching from knowledge database
+
 import os
 import sqlite3
-
-# find / -name 'knowledgeC*' 2>&1 | grep -v "Operation not permitted"
-#   ~/Library/Application\ Support/Knowledge/
-#   /System/Volumes/Data/Users/$USER/Library/Application Support/Knowledge/knowledgeC.db
 
 user = os.environ['USER']
 db_path = f'/System/Volumes/Data/Users/{user}/Library/Application Support/Knowledge/knowledgeC.db'
