@@ -6,13 +6,6 @@ class ScreenTimeApp : NSObject, NSApplicationDelegate {
     var timer = Timer()
     var counter = 0
 
-    // TODO: remove?
-    let window = NSWindow.init(
-        contentRect: NSMakeRect(0, 0, 200, 200),
-        styleMask: [.titled, .closable, .miniaturizable],
-        backing: .buffered,
-        defer: false)
-
     override init() {
         super.init()
         app.setActivationPolicy(.accessory) // No dock, no menubar
