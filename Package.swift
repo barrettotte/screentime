@@ -20,8 +20,8 @@ let package = Package(
             name: "ScreenTime",
             dependencies: ["ScreenTimeCore"]),
         .target(name: "ScreenTimeCore")
-        .testTarget(
-            name: "ScreenTimeTests",
-            dependencies: ["ScreenTimeCore"]),
+        // .testTarget(
+        //     name: "ScreenTimeTests",
+        //     dependencies: ["ScreenTimeCore"]),
     ]
 )
