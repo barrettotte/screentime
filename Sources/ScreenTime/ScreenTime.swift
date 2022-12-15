@@ -4,10 +4,8 @@ import ScreenTimeCore
 public struct ScreenTime {
 
     public static func main() {
-        let runner = ScreenTimeRunner()
-
         do {
-            try runner.run()
+            try ScreenTimeRunner().run()
         } catch {
             print("Error occurred: \(error)")
         }

@@ -6,7 +6,6 @@ public final class ScreenTimeRunner {
         // nop
     }
 
-    // Init and run ScreenTime application
     public func run() throws {
         let delegate = ScreenTimeApp()
         let app = NSApplication.shared

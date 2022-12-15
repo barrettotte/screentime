@@ -2,23 +2,21 @@ import AppKit
 import Foundation
 import SQLite
 
-extension String: Error {}
-
 class ScreenTimeApp : NSObject, NSApplicationDelegate {
 
     private let app = NSApplication.shared
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private var timer = Timer()
     private let knowledgeSql = """
-        with app_usage as (
-            select datetime(ZOBJECT.ZCREATIONDATE + 978307200, 'UNIXEPOCH', 'LOCALTIME') as entry_creation, 
-                (ZOBJECT.ZENDDATE - ZOBJECT.ZSTARTDATE) as usage
-            from ZOBJECT
-            where ZSTREAMNAME is "/app/usage"
-        )
-        select time(sum(usage), 'unixepoch') as total_usage
-        from app_usage
-        where date(entry_creation) = date('now');
+      with app_usage as (
+        select datetime(ZOBJECT.ZCREATIONDATE + 978307200, 'UNIXEPOCH', 'LOCALTIME') as entry_creation, 
+          (ZOBJECT.ZENDDATE - ZOBJECT.ZSTARTDATE) as usage
+        from ZOBJECT
+        where ZSTREAMNAME is "/app/usage"
+      )
+      select time(sum(usage), 'unixepoch') as total_usage
+      from app_usage
+      where date(entry_creation) = date('now');
     """
     private var knowledgeDbPath = ""
 
@@ -58,35 +56,50 @@ class ScreenTimeApp : NSObject, NSApplicationDelegate {
         print("ScreenTimeApp initialized.")
     }
 
+    internal func applicationDidFinishLaunching(_ n: Notification) {
+        print("ScreenTimeApp launched.")
+    }
+
     // Timer action needs to be exposed to Objective-C
     @objc
-    internal func timerAction() throws {
+    private func timerAction() throws {
         do {
             let uptime = formatTime(s: try queryScreenTime())
-            print("uptime => \(uptime)")
+            print("Uptime => \(uptime)")
             statusItem.button?.title = "\(uptime)"
         } catch {
             throw error
         }
     }
 
-    internal func applicationDidFinishLaunching(_ n: Notification) {
-        print("ScreenTimeApp launched.")
+    @objc
+    private func openSysPrefAction() {
+        NSWorkspace.shared.open(URL(fileURLWithPath: "/System/Library/PreferencePanes/ScreenTime.prefPane"))
     }
 
     private func buildMenu(title: String = "Menu") -> NSMenu {
         let menu = NSMenu(title: title)
-
         menu.addItem(
             NSMenuItem.init(
-                title: "Exit",
+                title: "System Preferences",
+                action: #selector(self.openSysPrefAction),
+                keyEquivalent: "o"
+            )
+        )
+        menu.addItem(
+            NSMenuItem.init(
+                title: "Force Refresh",
+                action: #selector(self.timerAction),
+                keyEquivalent: "r"
+            )
+        )
+        menu.addItem(
+            NSMenuItem.init(
+                title: "Quit",
                 action: #selector(app.terminate(_:)),
                 keyEquivalent: "q"
             )
         )
-
-        // TODO: add System Preferences/Screen Time item
-
         return menu
     }
 
