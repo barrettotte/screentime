@@ -60,7 +60,6 @@ class ScreenTimeApp : NSObject, NSApplicationDelegate {
         print("ScreenTimeApp launched.")
     }
 
-    // Timer action needs to be exposed to Objective-C
     @objc
     private func timerAction() throws {
         do {

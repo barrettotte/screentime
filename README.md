@@ -20,7 +20,17 @@ swift run
 
 ## Run on Startup
 
-TODO:
+```applescript
+# screentime.applescript
+do shell script "swift run --package-path $PATH_TO_REPO"
+```
+
+```sh
+# compile AppleScript command to MacOS app
+osacompile -o ScreenTime.app screentime.applescript
+```
+
+Go to `System Preferences > Users & Groups > Login Items`, then press `+` and add `ScreenTime.app`.
 
 ## References
 
