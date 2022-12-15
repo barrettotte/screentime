@@ -5,8 +5,10 @@ A MacOS status bar item to show today's screen time for roughly tracking work ho
 ![docs/screenshot.png](docs/screenshot.png)
 
 This is pretty much just an alternative display to `System Preferencs/Screen Time`.
-Uses MacOS "Knowledge" SQLite database to find total app usage and displays in status bar with format of `##h ##m`.
+Uses macOS "Knowledge" SQLite database to find total app usage and displays in status bar with format of `##h ##m`.
 Also, built without using xcode editor and only uses Swift Package Manager (SPM).
+
+Tested on MacBook Pro M1 with macOS 12.6
 
 ## Commands
 
@@ -26,7 +28,7 @@ do shell script "swift run --package-path $PATH_TO_REPO"
 ```
 
 ```sh
-# compile AppleScript command to MacOS app
+# compile AppleScript command to macOS app
 osacompile -o ScreenTime.app screentime.applescript
 ```
 
