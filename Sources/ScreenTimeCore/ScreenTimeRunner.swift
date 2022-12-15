@@ -1,15 +1,16 @@
+import AppKit
+
 public final class ScreenTimeRunner {
+    
     public init() {
         // nop
     }
 
+    // Init and run ScreenTime application
     public func run() throws {
-        print("Hello world")
-
-        // TODO:
-        // let delegate = ScreenTimeApp()
-        // let app = NSApplication.shared
-        // app.delegate = delegate
-        // app.run()
+        let delegate = ScreenTimeApp()
+        let app = NSApplication.shared
+        app.delegate = delegate
+        app.run()
     }
 }

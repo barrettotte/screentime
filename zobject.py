@@ -17,7 +17,7 @@ with app_usage as (
 )
 select time(sum(usage), 'unixepoch') as total_usage
 from app_usage
-where date(entry_creation)=date('now');
+where date(entry_creation) = date('now');
 """
 
 for row in cursor.execute(query):

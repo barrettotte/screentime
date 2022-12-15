@@ -3,7 +3,7 @@
 /*
 # Find knowledge sqlite database
 
-find / -name 'knowledgeC*' 2>&1 | grep -v "Operation not permitted"
+find / -name 'knowledgeC*' 2>&1 | grep -v "Operation not permitted" | grep -v "Permission denied"
 
 # ~/Library/Application\ Support/Knowledge/
 # /System/Volumes/Data/Users/$USER/Library/Application Support/Knowledge/knowledgeC.db
@@ -58,4 +58,4 @@ with app_usage as (
 )
 select time(sum(usage), 'unixepoch') as total_usage
 from app_usage
-where date(entry_creation)=date('now');
+where date(entry_creation) = date('now');

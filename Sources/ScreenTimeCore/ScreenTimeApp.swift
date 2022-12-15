@@ -1,56 +1,106 @@
 import AppKit
+import Foundation
+import SQLite
+
+extension String: Error {}
 
 class ScreenTimeApp : NSObject, NSApplicationDelegate {
-    let app = NSApplication.shared
-    let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-    var timer = Timer()
-    var counter = 0
+
+    private let app = NSApplication.shared
+    private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    private var timer = Timer()
+    private let knowledgeSql = """
+        with app_usage as (
+            select datetime(ZOBJECT.ZCREATIONDATE + 978307200, 'UNIXEPOCH', 'LOCALTIME') as entry_creation, 
+                (ZOBJECT.ZENDDATE - ZOBJECT.ZSTARTDATE) as usage
+            from ZOBJECT
+            where ZSTREAMNAME is "/app/usage"
+        )
+        select time(sum(usage), 'unixepoch') as total_usage
+        from app_usage
+        where date(entry_creation) = date('now');
+    """
+    private var knowledgeDbPath = ""
 
     override init() {
         super.init()
         app.setActivationPolicy(.accessory) // No dock, no menubar
 
-        let statusMenu = newMenu()
+        // set knowledge database path
+        if let user = ProcessInfo.processInfo.environment["USER"] {
+            self.knowledgeDbPath = "/System/Volumes/Data/Users/\(user)/Library/Application Support/Knowledge/knowledgeC.db"
+        } else {
+            print("Failed to find user from environment. Unable to start app.")
+            return
+        }
+
+        // setup status bar
+        let statusMenu = buildMenu()
         statusItem.button?.title = "..."
         statusItem.menu = statusMenu
 
-        let appMenu = newMenu()
+        // setup app menu
+        let appMenu = buildMenu()
         let sub = NSMenuItem()
         sub.submenu = appMenu
         app.mainMenu = NSMenu()
         app.mainMenu?.addItem(sub)
 
+        // setup and start timer
         timer = Timer.scheduledTimer(
-            timeInterval: 1.0, 
-            target: self, 
-            selector: #selector(timerAction), 
-            userInfo: nil, 
-            repeats: true)
-
-        print("App initialized.")
+            timeInterval: (60.0 * 2.5), // seconds
+            target: self,
+            selector: #selector(timerAction),
+            userInfo: nil,
+            repeats: true
+        )
+        timer.fire()
+        print("ScreenTimeApp initialized.")
     }
 
     // Timer action needs to be exposed to Objective-C
-    @objc func timerAction() {
-        counter += 1
-        print("\(counter) second(s)")
-        // statusItem.button?.title = "\(counter)"
+    @objc
+    internal func timerAction() throws {
+        do {
+            let uptime = formatTime(s: try queryScreenTime())
+            print("uptime => \(uptime)")
+            statusItem.button?.title = "\(uptime)"
+        } catch {
+            throw error
+        }
     }
 
-    func applicationDidFinishLaunching(_ n: Notification) {
-        print("App launched.")
+    internal func applicationDidFinishLaunching(_ n: Notification) {
+        print("ScreenTimeApp launched.")
     }
 
-    private func newMenu(title: String = "Menu") -> NSMenu {
+    private func buildMenu(title: String = "Menu") -> NSMenu {
         let menu = NSMenu(title: title)
 
-        menu.addItem(NSMenuItem.init(
-            title: "Exit", 
-            action: #selector(app.terminate(_:)), 
-            keyEquivalent: "q"))
+        menu.addItem(
+            NSMenuItem.init(
+                title: "Exit",
+                action: #selector(app.terminate(_:)),
+                keyEquivalent: "q"
+            )
+        )
 
-        // TODO: open System Preferences/Screen Time
+        // TODO: add System Preferences/Screen Time item
 
         return menu
+    }
+
+    private func queryScreenTime() throws -> String {
+        do {
+            let db = try Connection(knowledgeDbPath, readonly: true)
+            return try db.scalar(knowledgeSql) as! String
+        } catch {
+            throw error
+        }
+    }
+
+    private func formatTime(s: String) -> String {
+        let t = s.split(separator: ":")
+        return "\(t[0])h \(t[1])m"
     }
 }
